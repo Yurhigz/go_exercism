@@ -1,76 +1,66 @@
-package expenses
-import "errors"
+package sorting
+import ("fmt"
+		"strconv"
+        )
+// DescribeNumber should return a string describing the number.
+func DescribeNumber(f float64) string {
 
-// Record represents an expense record.
-type Record struct {
-	Day      int
-	Amount   float64
-	Category string
+	return fmt.Sprintf("This is the number %.1f",f)
 }
 
-// DaysPeriod represents a period of days for expenses.
-type DaysPeriod struct {
-	From int
-	To   int
+type NumberBox interface {
+	Number() int
 }
 
-// Filter returns the records for which the predicate function returns true.
-func predicate(r Record) bool {
-    return r.Day == 1
+// DescribeNumberBox should return a string describing the NumberBox.
+func DescribeNumberBox(nb NumberBox) string {
+	return fmt.Sprintf("This is a box containing the number %.1f",float64(nb.Number()))
 }
-func Filter(in []Record, predicate func(Record) bool) []Record {
-	records := []Record{}
-    for _,v := range in {
-        if predicate(v){ 
-        	records = append(records,v)
-    	}
+
+type FancyNumber struct {
+	n string
+}
+
+func (i FancyNumber) Value() string {
+	return i.n
+}
+
+type FancyNumberBox interface {
+	Value() string
+}
+
+// ExtractFancyNumber should return the integer value for a FancyNumber
+// and 0 if any other FancyNumberBox is supplied.
+func ExtractFancyNumber(fnb FancyNumberBox) int {
+	str, ok := fnb.(FancyNumber)
+    if ok {
+        value,_ := strconv.Atoi(str.Value())
+        return value
     }
-	return records
+    return 0
 }
 
-// ByDaysPeriod returns predicate function that returns true when
-// the day of the record is inside the period of day and false otherwise.
-func ByDaysPeriod(p DaysPeriod) func(Record) bool {
-    return func(r Record) bool {
-        if r.Day <= p.To && r.Day >= p.From {
-            return true
-        }
-        return false
-    }
-}
-
-// ByCategory returns predicate function that returns true when
-// the category of the record is the same as the provided category
-// and false otherwise.
-func ByCategory(c string) func(Record) bool {
-    return func(r Record) bool {
-        if r.Category == c {
-            return true
-        }
-        return false
+// DescribeFancyNumberBox should return a string describing the FancyNumberBox.
+func DescribeFancyNumberBox(fnb FancyNumberBox) string {
+	if ExtractFancyNumber(fnb) == 0 {
+        return "This is a fancy box containing the number 0.0"
+    } else {
+        return fmt.Sprintf("This is a fancy box containing the number %.1f",float64(ExtractFancyNumber(fnb)))
     }
 }
 
-// TotalByPeriod returns total amount of expenses for records
-// inside the period p.
-func TotalByPeriod(in []Record, p DaysPeriod) float64 {
-    filtered := Filter(in,ByDaysPeriod(p))
-    var totalAmount float64 = 0 
-    for _,v := range filtered {
-        totalAmount = totalAmount + v.Amount
+// DescribeAnything should return a string describing whatever it contains.
+func DescribeAnything(i interface{}) string {
+	switch v := i.(type) {
+        case int:
+			return DescribeNumber(float64(v))
+        case float64:
+        	return DescribeNumber(v)
+        case NumberBox : 
+			return DescribeNumberBox(v)
+        case FancyNumberBox:
+        	return DescribeFancyNumberBox(v)
+        default :
+        	return "Return to sender"
     }
-	return totalAmount
-}
-
-// CategoryExpenses returns total amount of expenses for records
-// in category c that are also inside the period p.
-// An error must be returned only if there are no records in the list that belong
-// to the given category, regardless of period of time.
-func CategoryExpenses(in []Record, p DaysPeriod, c string) (float64, error) {
-    err := errors.New("unknown category")
-	CategoryFiltered := Filter(in,ByCategory(c))
-    if len(CategoryFiltered) == 0 {
-        return 0,err
-    }
-	return TotalByPeriod(CategoryFiltered,p), nil
-}
+} 
