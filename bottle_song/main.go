@@ -1,39 +1,47 @@
-package main
+package bottlesong
 
 import (
-	"fmt"
 	"strings"
 )
 
-func Recite(startBottles, takeDown int) []string {
-	lyrics := []string{}
-	numbers := []string{
-		"One green bottle",
-		"Two green bottles",
-		"Three green bottles",
-		"Four green bottles",
-		"Five green bottles",
-		"Six green bottles",
-		"Seven green bottles",
-		"Eight green bottles",
-		"Nine green bottles",
-		"Ten green bottles"}
+func verse(nbBottles int) []string {
+	numbers := map[int]string{
+		0:  "No green bottles",
+		1:  "One green bottle",
+		2:  "Two green bottles",
+		3:  "Three green bottles",
+		4:  "Four green bottles",
+		5:  "Five green bottles",
+		6:  "Six green bottles",
+		7:  "Seven green bottles",
+		8:  "Eight green bottles",
+		9:  "Nine green bottles",
+		10: "Ten green bottles"}
 
-	for i := startBottles; i > takeDown; i-- {
-		nextBottles := "no green bottles"
-		if i > 1 {
-			nextBottles = strings.ToLower(numbers[i-2])
-		}
-		verse := fmt.Sprintf(
-			"%[1]s hanging on the wall,\n%[1]s hanging on the wall,\nAnd if one green bottle should accidentally fall,\nThere'll be %[2]s hanging on the wall.\n",
-			numbers[i-1], nextBottles,
-		)
-		lyrics = append(lyrics, verse)
-	}
-	return lyrics
+	firstLines := numbers[nbBottles] + " hanging on the wall,"
+	secondLine := "And if one green bottle should accidentally fall,"
+	thirdLine := "There'll be " + strings.ToLower(numbers[nbBottles-1]) + " hanging on the wall."
+
+	return []string{firstLines, firstLines, secondLine, thirdLine}
 }
 
-func main() {
-	fmt.Println(Recite(10, 1))
+func Recite(startBottles, takeDown int) []string {
+	lyrics := []string{}
 
+	if takeDown <= 1 {
+		for _, element := range verse(startBottles) {
+			lyrics = append(lyrics, element)
+		}
+		return lyrics
+	}
+
+	for i := 0; i < takeDown; i++ {
+		for _, element := range verse(startBottles - i) {
+			lyrics = append(lyrics, element)
+		}
+		if i < takeDown-1 {
+			lyrics = append(lyrics, "")
+		}
+	}
+	return lyrics
 }
