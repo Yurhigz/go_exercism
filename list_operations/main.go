@@ -13,7 +13,7 @@ func (s IntList) Foldl(fn func(int, int) int, initial int) int {
 }
 
 func (s IntList) Foldr(fn func(int, int) int, initial int) int {
-	for i := len(s) - 1; i >= 0; i-- {
+	for i := s.Length() - 1; i >= 0; i-- {
 		initial = fn(s[i], initial)
 	}
 	return initial
@@ -64,19 +64,26 @@ func (s IntList) Reverse() IntList {
 
 func (s IntList) Append(lst IntList) IntList {
 	if s.Length() == 0 {
+		return lst
+	}
+	if lst.Length() == 0 {
 		return s
 	}
-	newList := make([]int, s.Length(), s.Length()+lst.Length())
-	// for _,v := range lst {
-	//     newList =+ v
-	// }
-	// return s
+
+	totalLen := s.Length() + lst.Length()
+	newList := make(IntList, totalLen)
+	copy(newList, []int(s))
+	copy(newList[s.Length():], []int(lst))
+
 	return newList
 
 }
 
 func (s IntList) Concat(lists []IntList) IntList {
-	panic("Please implement the Concat function")
+	for _, list := range lists {
+		s = s.Append(list)
+	}
+	return s
 }
 
 func main() {
