@@ -23,7 +23,7 @@ var order = []string{
 }
 
 func Verse(i int) string {
-	if i > 11 || i < 0 {
+	if i > 12|| i < 0 {
 		return ""
 	}
 	gift := ""
