@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 )
@@ -15,30 +14,63 @@ func Operator(op string, a, b int) int {
 	case "multiplied by":
 		return a * b
 	case "divided by":
+		if b == 0 {
+			return 0
+		}
 		return a / b
+	default:
+		return 0
 	}
-	return 0
+}
+
+func Answer(question string) (int, bool) {
+
+	re := regexp.MustCompile(`What is (-?\d+)(?: (plus|minus|multiplied by|divided by) (-?\d+))*\?`)
+
+	if re.MatchString(question) {
+
+		reSubNumbers, reSubOperators := regexp.MustCompile(`-?\d+`), regexp.MustCompile(`(plus|minus|multiplied by|divided by)`)
+		numbers, operators := reSubNumbers.FindAllString(question, -1), reSubOperators.FindAllString(question, -1)
+		results, _ := strconv.Atoi(numbers[0])
+
+		if len(numbers) == 1 {
+			return results, true
+		}
+
+		for i := 1; i < len(numbers); i++ {
+			number, _ := strconv.Atoi(numbers[i])
+			operator := operators[i-1]
+			results = Operator(operator, results, number)
+		}
+		return results, true
+
+	} else {
+		return 0, false
+	}
+
 }
 
 func main() {
-
-	question := []string{
+	tests := []string{
 		"What is 5?",
-		"What is 1 plus 1?",
-		"What is 53 plus 2?",
 		"What is -1 plus -10?",
-		"What is 4 minus -12?",
-		"What is -3 multiplied by 25?",
-		"What is 33 divided by -3?",
-		"What is 15 plus 3 minus 5 multiplied by 2 divided by 4",
+		"What is 5 plus 13?",
+		"What is 7 minus 5?",
+		"What is 6 multiplied by 4?",
+		"What is 25 divided by 5?",
+		"What is 3 plus 2 multiplied by 3?",
+		"What is 52 cubed?",
+		"Who is the President?",
+		"What is 1 plus plus 2?",
+		"What is -12 divided by 2 divided by -3?",
+		"What is -3 plus 7 multiplied by -2?",
 	}
-	// What is (\d+)(?:\s*(plus|minus|multiplied by|divided by)\s*(\d+))*
-	// What is (\d+)((plus|minus|multiplied by|divided)* (\d+)*)*
-	re := regexp.MustCompile(`What is (-?\d+)(?:\s+(plus|minus|multiplied by|divided by)\s+(-?\d+))*\?`)
-	matches := re.FindStringSubmatch(question[3])
-	firstNumber, _ := strconv.Atoi(matches[1])
-	operation := matches[2]
-	secondNumber, _ := strconv.Atoi(matches[3])
-	fmt.Println(firstNumber, operation, secondNumber)
-	fmt.Println(Operator(operation, firstNumber, secondNumber))
+	for _, question := range tests {
+		result, ok := Answer(question)
+		if ok {
+			println(question, "=>", result)
+		} else {
+			println(question, "=>", "I don't know")
+		}
+	}
 }
