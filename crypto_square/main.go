@@ -19,43 +19,23 @@ func normalize(pt string) string {
 
 func Encode(pt string) string {
 	ptNormalized := normalize(pt)
-	fmt.Println("ptNormalized : ", ptNormalized)
 	l := len(ptNormalized)
 	c, r := int(math.Ceil(math.Sqrt(float64(l)))), int(math.Floor(math.Sqrt(float64(l))))
-	fmt.Println("c : ", c, " r : ", r, " l : ", l)
-	var NormalizedMessage []string
-	NormalizedMessageList := make([]string, c)
-	if r*c >= l {
-		NormalizedMessage = make([]string, r)
-		ptNormalized += strings.Repeat(" ", c*r-l)
-		for i := 0; i < r; i++ {
-			NormalizedMessage[i] = ptNormalized[i*c : (i+1)*c]
-		}
-		for i := 0; i < c; i++ {
-			for j := 0; j < r; j++ {
-				NormalizedMessageList[i] += string(NormalizedMessage[j][i])
-			}
-		}
-	}
-	if r*c < l {
-		NormalizedMessage = make([]string, c)
-		for i := 0; i <= r; i++ {
-			if i == r {
-				NormalizedMessage[i] = ptNormalized[i*c : l]
-			} else {
-				NormalizedMessage[i] = ptNormalized[i*c : (i+1)*c]
-			}
-		}
 
-		fmt.Println("NormalizedMessage length : ", len(NormalizedMessage))
-		for i := 0; i < c; i++ {
-			for j := 0; j <= r; j++ {
-				if j == r && i == c-1 {
-					NormalizedMessageList[i] += " "
-					break
-				}
-				NormalizedMessageList[i] += string(NormalizedMessage[j][i])
-			}
+	if c*r < l {
+		r = r + 1
+	}
+
+	NormalizedMessageList := make([]string, c)
+	NormalizedMessage := make([]string, r)
+	ptNormalized += strings.Repeat(" ", c*r-l)
+
+	for i := 0; i < r; i++ {
+		NormalizedMessage[i] = ptNormalized[i*c : (i+1)*c]
+	}
+	for i := 0; i < c; i++ {
+		for j := 0; j < r; j++ {
+			NormalizedMessageList[i] += string(NormalizedMessage[j][i])
 		}
 	}
 
