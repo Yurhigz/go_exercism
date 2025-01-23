@@ -5,10 +5,10 @@ import (
 	"time"
 )
 
-// Define the WeekSchedule type here.
-
+// WeekSchedule is an alias for defining dates based on weeks.
 type WeekSchedule int
 
+// Aliases for WeekSchedule coerced into actual days of the month.
 const (
 	First  WeekSchedule = 1
 	Second WeekSchedule = 8
@@ -18,11 +18,17 @@ const (
 	Last   WeekSchedule = -6
 )
 
-func Day(wSched WeekSchedule, wDay time.Weekday, month time.Month, year int) int {
-	d := time.Date(year, month, int(wSched), 0, 0, 0, 0, time.UTC).Day()
-	return d
+// Day parses WeekSchedule expressions into actual dates.
+func Day(w WeekSchedule, wd time.Weekday, m time.Month, y int) int {
+	if w == Last {
+		m++
+	}
+	t := time.Date(y, m, int(w), 12, 0, 0, 0, time.UTC)
+	return t.Day() + int(wd-t.Weekday()+7)%7
 }
 
 func main() {
-	fmt.Println(Day(Teenth, time.Monday, 8, 2013))
+	fmt.Println(Day(Teenth, time.Monday, 8, 2024))
+	// fmt.Println(Day(Teenth))
+
 }
