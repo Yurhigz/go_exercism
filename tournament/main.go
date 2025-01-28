@@ -91,7 +91,7 @@ func Tally(reader io.Reader, writer io.Writer) error {
 
 	fmt.Fprintf(writer, "%-30s | %2s | %2s | %2s | %2s | %2s \n", "Team", "MP", "W", "D", "L", "P")
 	for _, team := range listOfTeams {
-		fmt.Fprintf(writer, "%-30s| %2d  | %2d | %2d | %2d | %2d \n", team.team, team.matchPlayed, team.wins, team.draws, team.losses, team.totalPoints)
+		fmt.Fprintf(writer, "%-30s| %2d | %2d | %2d | %2d | %2d\n", team.team, team.matchPlayed, team.wins, team.draws, team.losses, team.totalPoints)
 	}
 
 	return nil
