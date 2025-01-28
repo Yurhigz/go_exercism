@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"sort"
@@ -18,20 +17,26 @@ type performances struct {
 	totalPoints int
 }
 
-func Tally(reader io.Reader) error {
+func Tally(reader io.Reader, writer io.Writer) error {
 	teams := make(map[string]*performances)
-	r := bufio.NewReader(reader)
-	scanner := bufio.NewScanner(r)
-
+	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		line := scanner.Text()
-		data := strings.Split(line, ";")
 
+		if len(strings.TrimSpace(line)) == 0 || strings.HasPrefix(strings.TrimSpace(line), "#") {
+			continue
+		}
+
+		data := strings.Split(line, ";")
 		if len(data) != 3 {
-			return errors.New("The content of data does not match what is expected")
+			return fmt.Errorf("invalid format: each line must contain exactly 3 fields: %s", line)
 		}
 
 		team1, team2, result := data[0], data[1], data[2]
+
+		if result != "win" && result != "loss" && result != "draw" {
+			return fmt.Errorf("invalid result '%s': must be 'win', 'loss' or 'draw'", result)
+		}
 
 		if _, keyExist := teams[team1]; !keyExist {
 			teams[team1] = &performances{team: team1}
@@ -67,6 +72,11 @@ func Tally(reader io.Reader) error {
 		}
 
 	}
+
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("error reading input: %v", err)
+	}
+
 	listOfTeams := []performances{}
 	for _, team := range teams {
 		listOfTeams = append(listOfTeams, *team)
@@ -78,9 +88,10 @@ func Tally(reader io.Reader) error {
 		}
 		return listOfTeams[i].team < listOfTeams[j].team
 	})
-	fmt.Printf("%-26s | MP | W | D | L | P \n", "Team")
+
+	fmt.Fprintf(writer, "%-30s | %2s | %2s | %2s | %2s | %2s \n", "Team", "MP", "W", "D", "L", "P")
 	for _, team := range listOfTeams {
-		fmt.Printf("%-27s| %v  | %v | %v | %v | %v \n", team.team, team.matchPlayed, team.wins, team.draws, team.losses, team.totalPoints)
+		fmt.Fprintf(writer, "%-30s| %2d  | %2d | %2d | %2d | %2d \n", team.team, team.matchPlayed, team.wins, team.draws, team.losses, team.totalPoints)
 	}
 
 	return nil
@@ -88,11 +99,21 @@ func Tally(reader io.Reader) error {
 
 func main() {
 
-	data := `Allegoric Alaskians;Blithering Badgers;win
-Devastating Donkeys;Courageous Californians;draw
-Devastating Donkeys;Allegoric Alaskians;win
-Courageous Californians;Blithering Badgers;loss
-Blithering Badgers;Devastating Donkeys;loss
-Allegoric Alaskians;Courageous Californians;win`
-	Tally(strings.NewReader(data))
+	// 	data := `Allegoric Alaskians;Blithering Badgers;win
+	// Devastating Donkeys;Courageous Californians;draw
+	// Devastating Donkeys;Allegoric Alaskians;win
+	// Courageous Californians;Blithering Badgers;loss
+	// Blithering Badgers;Devastating Donkeys;loss
+	// Allegoric Alaskians;Courageous Californians;win`
+	// Tally(strings.NewReader(data))
+	fmt.Println(len("Team                             "))
+	fmt.Println(len("Devastating Donkeys            "))
+	fmt.Println(len("Devastating Donkeys            "))
 }
+
+// var errorTestCases = []string{
+// 	"Bla;Bla;Bla",
+// 	"Devastating Donkeys_Courageous Californians;draw",
+// 	"Devastating Donkeys@Courageous Californians;draw",
+// 	"Devastating Donkeys;Allegoric Alaskians;dra",
+// }
