@@ -3,7 +3,33 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strconv"
 )
+
+func hornerMethod(number string, base int) int {
+	result := 0
+	for _, n := range number {
+		value, err := strconv.Atoi(string(n))
+		if err != nil {
+			return 0
+		}
+		result = result*base + value
+	}
+	return result
+}
+
+func fromTenToBase(number int, base int) int {
+	result := 0
+	iterator := number
+	valuesList := []int{}
+	var baseNumber int
+	for iterator%base > 0 {
+		valuesList = append(valuesList, iterator%base)
+		iterator = iterator / base
+	}
+	// Revoir le format de la données pour le traitement de la liste
+	// for i := range string(valuesList)
+}
 
 func ConvertToBase(inputBase int, inputDigits []int, outputBase int) ([]int, error) {
 	if inputBase < 2 || outputBase < 2 {
