@@ -3,56 +3,52 @@ package main
 import (
 	"errors"
 	"fmt"
-	"strconv"
 )
 
-func hornerMethod(number int, base int) int {
+func hornerMethod(number []int, base int) int {
 	result := 0
-	numbers := string(number)
-	for _, n := range numbers {
-		result = result*base + int(n)
+	for _, n := range number {
+		result = result*base + n
 	}
 	return result
 }
 
-func fromTenToBase(number int, base int) int {
-	valuesList := ""
+func fromTenToBase(number int, base int) []int {
+	if number == 0 {
+		return []int{0}
+	}
+	var result []int
 	for number > 0 {
 		remainder := number % base
-		quotient := number / base
-		number = quotient
-		valuesList = fmt.Sprintf("%d%s", remainder, valuesList)
+		result = append([]int{remainder}, result...)
+		number /= base
 
 	}
-	finalValue, err := strconv.Atoi(valuesList)
-	if err != nil {
-		return 0
-	}
-	return finalValue
+	return result
 }
 
 func ConvertToBase(inputBase int, inputDigits []int, outputBase int) ([]int, error) {
-	if inputBase < 2 || outputBase < 2 {
-		return []int{}, errors.New("inputBase and outputBase must be >= 2")
+	if inputBase < 2 {
+		return []int{}, errors.New("input base must be >= 2")
+	}
+	if outputBase < 2 {
+		return []int{}, errors.New("output base must be >= 2")
 	}
 	for _, number := range inputDigits {
-		if number < 0 || number > inputBase {
+		if number < 0 || number >= inputBase {
 			return inputDigits, errors.New("all digits must satisfy 0 <= d < input base")
 		}
 	}
-	outputDigits := []int{}
-	for _, number := range inputDigits {
-		hmethod := hornerMethod(number, inputBase)
-		tenToBase := fromTenToBase(hmethod, outputBase)
-		// fmt.Printf("Ceci est number : %v \nCeci est hmethod : %v \n Ceci est tenTobase : %v \n", number, hmethod, tenToBase)
-		outputDigits = append(outputDigits, tenToBase)
-	}
-	return outputDigits, nil
+	hornerResult := hornerMethod(inputDigits, inputBase)
+	fttbResult := fromTenToBase(hornerResult, outputBase)
+
+	return fttbResult, nil
 }
 
 func main() {
 	fmt.Println(ConvertToBase(2, []int{1}, 10))
 	fmt.Println(ConvertToBase(2, []int{1, 0, 1}, 10))
+	fmt.Println(ConvertToBase(2, []int{1, 0, 1, 0, 1, 0}, 10))
 }
 
 // testCases := []struct {
