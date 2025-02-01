@@ -6,9 +6,10 @@ import (
 	"strconv"
 )
 
-func hornerMethod(number string, base int) int {
+func hornerMethod(number int, base int) int {
 	result := 0
-	for _, n := range number {
+	numbers := string(number)
+	for _, n := range numbers {
 		value, err := strconv.Atoi(string(n))
 		if err != nil {
 			return 0
@@ -18,7 +19,7 @@ func hornerMethod(number string, base int) int {
 	return result
 }
 
-func fromTenToBase(number int, base int) string {
+func fromTenToBase(number int, base int) int {
 	valuesList := ""
 	for number > 0 {
 		remainder := number % base
@@ -27,7 +28,11 @@ func fromTenToBase(number int, base int) string {
 		valuesList = fmt.Sprintf("%d%s", remainder, valuesList)
 
 	}
-	return valuesList
+	finalValue, err := strconv.Atoi(valuesList)
+	if err != nil {
+		return 0
+	}
+	return finalValue
 }
 
 func ConvertToBase(inputBase int, inputDigits []int, outputBase int) ([]int, error) {
@@ -40,10 +45,10 @@ func ConvertToBase(inputBase int, inputDigits []int, outputBase int) ([]int, err
 		}
 	}
 	outputDigits := []int{}
-	for i, number := range inputDigits {
-
+	for _, number := range inputDigits {
+		outputDigits = append(outputDigits, fromTenToBase(hornerMethod(number, inputBase), outputBase))
 	}
-	panic("Please implement the ConvertToBase function")
+	return outputDigits, nil
 }
 
 func main() {
