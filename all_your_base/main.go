@@ -18,17 +18,16 @@ func hornerMethod(number string, base int) int {
 	return result
 }
 
-func fromTenToBase(number int, base int) int {
-	result := 0
-	iterator := number
-	valuesList := []int{}
-	var baseNumber int
-	for iterator%base > 0 {
-		valuesList = append(valuesList, iterator%base)
-		iterator = iterator / base
+func fromTenToBase(number int, base int) string {
+	valuesList := ""
+	for number > 0 {
+		remainder := number % base
+		quotient := number / base
+		number = quotient
+		valuesList = fmt.Sprintf("%d%s", remainder, valuesList)
+
 	}
-	// Revoir le format de la données pour le traitement de la liste
-	// for i := range string(valuesList)
+	return valuesList
 }
 
 func ConvertToBase(inputBase int, inputDigits []int, outputBase int) ([]int, error) {
