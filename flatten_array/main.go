@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 )
-
 func Flatten(nested interface{}) []interface{} {
 	nest := reflect.ValueOf(nested)
 	if nest.Len() == 0 && nest.Kind() == reflect.Slice {
@@ -25,9 +24,10 @@ func Flatten(nested interface{}) []interface{} {
 		}
 	} else if reflect.ValueOf(nested).Len() > 0 {
 		results = append(results, nested)
-	} else if reflect.ValueOf(results).Len() == 0 && reflect.ValueOf(nested).Len() == 0 {
-		return []interface{}{}
-	}
+	} 
+    if results == nil {
+        return []interface{}{}
+    }
 	return results
 }
 
