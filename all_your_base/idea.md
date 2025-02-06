@@ -50,7 +50,7 @@ Elle consiste à :
 
 🔍 Exemple
 
-Convertissons (866)10(866)10​ en base 7.
+Convertissons (866)10​ en base 7.
 Division	Quotient	Reste
 866 ÷ 7	123	5
 123 ÷ 7	17	4
