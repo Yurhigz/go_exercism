@@ -7,33 +7,40 @@ import (
 
 func Flatten(nested interface{}) []interface{} {
 	nest := reflect.ValueOf(nested)
+	results := make([]interface{}, 0)
+
 	if nest.Len() == 0 && nest.Kind() == reflect.Slice {
-		return []interface{}{}
+		return results
 	}
 
-	var results []interface{}
-
 	if nest.Kind() == reflect.Array || nest.Kind() == reflect.Slice {
-		fmt.Println("C'est un nested ! ")
+
 		for j := 0; j < nest.Len(); j++ {
 
 			elem := nest.Index(j).Interface()
-			// fmt.Println("Elem vaut : ", elem)
+
 			elemValue := reflect.ValueOf(elem)
-			// fmt.Println("elemValue vaut : ", elemValue)
-			if elemValue.Kind() == reflect.Slice && elemValue.Len() > 0 {
-				results = append(results, Flatten(elem)...)
-			} else if elem != nil {
+
+			if elem == nil {
+				continue
+			}
+			if elemValue.Kind() == reflect.Slice {
+				if elemValue.Len() == 0 {
+					continue
+				}
+
+				flattened := Flatten(elem)
+				if len(flattened) > 0 {
+					results = append(results, flattened...)
+				}
+			} else {
 				results = append(results, elem)
 			}
 		}
-	} else if reflect.ValueOf(nested).Len() > 0 {
+	} else {
 		results = append(results, nested)
 	}
 
-	if results == nil {
-		return []interface{}{}
-	}
 	return results
 }
 
