@@ -141,3 +141,32 @@ Objectif :
 📌 Indice :
 
     Utiliser deux Goroutines pour gérer l’envoi et la réception.
+
+
+
+
+    🛠 Exercice : Pipeline de traitement de données
+Objectif :
+
+Tu dois implémenter un pipeline en 3 étapes :
+
+    Génération des données → Un producteur envoie des nombres dans un channel.
+    Traitement des données → Un worker lit les nombres, les multiplie par 2 et les envoie dans un autre channel.
+    Affichage des résultats → Un consommateur affiche les résultats.
+
+📌 Contraintes :
+
+    Utiliser 3 Goroutines (une pour chaque étape).
+    Utiliser 2 channels pour faire passer les données.
+    Assurer que toutes les Goroutines terminent correctement.
+    Utiliser sync.WaitGroup pour synchroniser la fin.
+
+    🔥 Pistes de résolution
+
+    Créer 2 channels : un chan int pour transmettre les nombres bruts et un autre chan int pour transmettre les résultats.
+    Créer 3 fonctions :
+        generateNumbers(n int, ch chan int, wg *sync.WaitGroup): Génère n nombres et les envoie dans ch.
+        processNumbers(chIn chan int, chOut chan int, wg *sync.WaitGroup): Multiplie chaque nombre par 2 et l'envoie dans chOut.
+        printResults(ch chan int, wg *sync.WaitGroup): Lit les résultats et les affiche.
+    Gérer les Goroutines avec un sync.WaitGroup pour s'assurer que tout se termine bien.
+    Fermer les channels une fois que toutes les données ont été traitées.
