@@ -1,10 +1,13 @@
 package tree
 
-import "errors"
+import (
+	"errors"
+	"sort"
+)
 
 type Record struct {
 	ID     int
-	Parent *int
+	Parent int
 	// feel free to add fields as you see fit
 }
 
@@ -15,16 +18,35 @@ type Node struct {
 }
 
 func Build(records []Record) (*Node, error) {
-	var organizedNode *Node
+
 	if len(records) == 0 {
 		return nil, nil
 	}
-	for _, record := range records {
-		if record.ID == 0 && record.Parent != nil {
-			return nil, errors.New("root cannot have parents")
+
+	sort.Slice(records, func(i, j int) bool {
+		return records[i].ID < records[j].ID
+	})
+
+	nodes := make(map[int]*Node)
+
+	for i, record := range records {
+
+		if record.ID != i || (record.ID != 0 && record.Parent >= record.ID) || (record.ID == 0 && record.Parent > 0) {
+			return nil, errors.New("données invalides")
+		}
+
+		nodes[record.ID] = &Node{
+			ID: record.ID,
+		}
+		if record.ID != 0 {
+			parent, exists := nodes[record.Parent]
+			if !exists {
+				return nil, errors.New("parent inexistant")
+			}
+			parent.Children = append(parent.Children, nodes[record.ID])
 		}
 	}
-
+	return nodes[0], nil
 }
 
 // https://www.geeksforgeeks.org/binary-tree-data-structure/
