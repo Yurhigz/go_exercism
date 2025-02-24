@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -36,6 +37,9 @@ func isMatrix(s string) bool {
 }
 
 func New(s string) (Matrix, error) {
+	if !isMatrix(s) {
+		return Matrix{}, errors.New("argument must be a matrix")
+	}
 	cols := [][]int{}
 	rows := [][]int{}
 	iteratorCol := 0
