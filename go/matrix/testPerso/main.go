@@ -40,26 +40,18 @@ func New(s string) (Matrix, error) {
 	if !isMatrix(s) {
 		return Matrix{}, errors.New("argument must be a matrix")
 	}
-	cols := [][]int{}
-	rows := [][]int{}
-	iteratorCol := 0
-	iteratorRow := 0
-	col := []int{}
-	row := []int{}
-	for _, value := range s {
-		if value == '\n' {
-			iteratorRow++
-			cols = append(cols, col)
-			rows = append(rows, row)
-			col = []int{}
-			row = []int{}
-		} else {
-			col = append(col, int(value))
-			row = append(row, int(value))
-			iteratorCol++
+	rows := strings.Split(s, "\n")
+	row := make([][]int, len(rows))
+	col := make([][]int, len(strings.Fields(rows[0])))
+	for i, value := range rows {
+		nums := strings.Fields(value)
+		for k, v := range nums {
+			numbers, _ := strconv.Atoi(v)
+			row[i] = append(row[i], numbers)
+			col[k] = append(col[k], numbers)
 		}
 	}
-	return Matrix{rows: rows, columns: cols}, nil
+	return Matrix{rows: row, columns: col}, nil
 }
 
 // Cols and Rows must return the results without affecting the matrix.
@@ -80,18 +72,18 @@ func (m Matrix) Set(row, col, val int) bool {
 func main() {
 	// test1 := "1 2\n10 20"
 	test2 := "89 1903 3\n18 3 1\n9 4 800"
-	// fmt.Println(New(test1))
-	// cols := [][]int{}
-	// rows := [][]int{}
-	// iteratorCol := 0
-	// iteratorRow := 0
-	// col := []int{}
-	// row := []int{}
-	// for _, value := range strings.Split(test2, "\n") {
-	// 	fmt.Println("len vaut : ", len(strings.Split(value, " ")))
-	// 	for _, v := range strings.Split(value, " ") {
-	// 		fmt.Println(v)
-	// 	}
-	// }
-	fmt.Println(isMatrix(test2))
+
+	rows := strings.Split(test2, "\n")
+	row := make([][]int, len(rows))
+	col := make([][]int, len(strings.Fields(rows[0])))
+	for i, value := range rows {
+		nums := strings.Fields(value)
+		for k, v := range nums {
+			numbers, _ := strconv.Atoi(v)
+			row[i] = append(row[i], numbers)
+			col[k] = append(col[k], numbers)
+		}
+	}
+	fmt.Println("Row : ", row)
+	fmt.Println("Col : ", col)
 }
