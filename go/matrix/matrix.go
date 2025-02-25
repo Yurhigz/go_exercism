@@ -7,10 +7,7 @@ import (
 )
 
 // Define the Matrix type here.
-type Matrix struct {
-	rows    [][]int
-	columns [][]int
-}
+type Matrix [][]int
 
 func isMatrix(s string) bool {
 	rows := strings.Split(s, "\n")
@@ -40,30 +37,34 @@ func New(s string) (Matrix, error) {
 		return Matrix{}, errors.New("argument must be a matrix")
 	}
 	rows := strings.Split(s, "\n")
-	row := make([][]int, len(rows))
-	col := make([][]int, len(strings.Fields(rows[0])))
+	matrix := make(Matrix, len(rows))
 	for i, value := range rows {
 		nums := strings.Fields(value)
-		for k, v := range nums {
+		for _, v := range nums {
 			numbers, _ := strconv.Atoi(v)
-			row[i] = append(row[i], numbers)
-			col[k] = append(col[k], numbers)
+			matrix[i] = append(matrix[i], numbers)
 		}
 	}
-	return Matrix{rows: row, columns: col}, nil
+	return matrix, nil
 }
 
 // Cols and Rows must return the results without affecting the matrix.
 func (m Matrix) Cols() [][]int {
-	return m.columns
+	cols := make([][]int, len(m))
+	for _, l := range m {
+		for k, v := range l {
+			cols[k] = append(cols[k], v)
+		}
+
+	}
+	return cols
 }
 
 func (m Matrix) Rows() [][]int {
-	return m.rows
+	return m
 }
 
 func (m Matrix) Set(row, col, val int) bool {
-	m.columns[row][col] = val
-	m.rows[col][row] = val
+	m.Rows()[row][col] = val
 	return true
 }
