@@ -38,6 +38,7 @@ func New(s string) (Matrix, error) {
 	}
 	rows := strings.Split(s, "\n")
 	matrix := make(Matrix, len(rows))
+
 	for i, value := range rows {
 		nums := strings.Fields(value)
 		for _, v := range nums {
@@ -50,21 +51,27 @@ func New(s string) (Matrix, error) {
 
 // Cols and Rows must return the results without affecting the matrix.
 func (m Matrix) Cols() [][]int {
-	cols := make([][]int, len(m))
+	cols := make([][]int, len(m[0]))
 	for _, l := range m {
 		for k, v := range l {
 			cols[k] = append(cols[k], v)
 		}
-
 	}
 	return cols
 }
 
 func (m Matrix) Rows() [][]int {
-	return m
+	rows := make([][]int, len(m))
+	for i, l := range m {
+		rows[i] = append(rows[i], l...)
+	}
+	return rows
 }
 
 func (m Matrix) Set(row, col, val int) bool {
-	m.Rows()[row][col] = val
+	if row < 0 || col < 0 || row >= len(m) || col >= len(m[0]) {
+		return false
+	}
+	m[row][col] = val
 	return true
 }
