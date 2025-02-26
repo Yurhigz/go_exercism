@@ -8,10 +8,7 @@ import (
 )
 
 // Define the Matrix type here.
-type Matrix struct {
-	rows    [][]int
-	columns [][]int
-}
+type Matrix [][]int
 
 func isMatrix(s string) bool {
 	rows := strings.Split(s, "\n")
@@ -41,49 +38,52 @@ func New(s string) (Matrix, error) {
 		return Matrix{}, errors.New("argument must be a matrix")
 	}
 	rows := strings.Split(s, "\n")
-	row := make([][]int, len(rows))
-	col := make([][]int, len(strings.Fields(rows[0])))
+	matrix := make(Matrix, len(rows))
+
 	for i, value := range rows {
 		nums := strings.Fields(value)
-		for k, v := range nums {
+		for _, v := range nums {
 			numbers, _ := strconv.Atoi(v)
-			row[i] = append(row[i], numbers)
-			col[k] = append(col[k], numbers)
+			matrix[i] = append(matrix[i], numbers)
 		}
 	}
-	return Matrix{rows: row, columns: col}, nil
+	return matrix, nil
 }
 
 // Cols and Rows must return the results without affecting the matrix.
 func (m Matrix) Cols() [][]int {
-	return m.columns
+	cols := make([][]int, len(m[0]))
+	for _, l := range m {
+		for k, v := range l {
+			cols[k] = append(cols[k], v)
+		}
+	}
+	return cols
 }
 
 func (m Matrix) Rows() [][]int {
-	return m.rows
+	rows := make([][]int, len(m))
+	for i, l := range m {
+		rows[i] = append(rows[i], l...)
+	}
+	return rows
 }
 
 func (m Matrix) Set(row, col, val int) bool {
-	m.columns[row][col] = val
-	m.rows[col][row] = val
+	if row < 0 || col < 0 || row >= len(m) || col >= len(m[0]) {
+		return false
+	}
+	m[row][col] = val
 	return true
 }
 
 func main() {
 	// test1 := "1 2\n10 20"
-	test2 := "89 1903 3\n18 3 1\n9 4 800"
+	// test2 := "89 1903 3\n18 3 1\n9 4 800"
+	test3 := "1 2 3\n4 5 6\n7 8 9\n 8 7 6"
+	m, _ := New(test3)
 
-	rows := strings.Split(test2, "\n")
-	row := make([][]int, len(rows))
-	col := make([][]int, len(strings.Fields(rows[0])))
-	for i, value := range rows {
-		nums := strings.Fields(value)
-		for k, v := range nums {
-			numbers, _ := strconv.Atoi(v)
-			row[i] = append(row[i], numbers)
-			col[k] = append(col[k], numbers)
-		}
-	}
-	fmt.Println("Row : ", row)
-	fmt.Println("Col : ", col)
+	m.Cols()
+	m.Set(0, 0, 10)
+	fmt.Println(m)
 }
