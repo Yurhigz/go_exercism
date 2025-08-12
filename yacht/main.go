@@ -1,25 +1,15 @@
-package yacht
-
-func numbersCount(value int, dice []int) int {
-	var points int
+func sum(dice []int) int {
+	total := 0
 	for _, v := range dice {
-		if v == value {
-			points += value
-		}
+		total += v
 	}
-	return points
-}
-
-func countOccurences(dice []int) map[int]int {
-	occurences := make(map[int]int)
-	for _, v := range dice {
-		occurences[v] += 1
-	}
-	return occurences
+	return total
 }
 
 func Score(dice []int, category string) int {
-	var points int
+	points := 0
+	occurrences := countOccurences(dice)
+
 	switch category {
 	case "ones":
 		points = numbersCount(1, dice)
@@ -33,62 +23,39 @@ func Score(dice []int, category string) int {
 		points = numbersCount(5, dice)
 	case "sixes":
 		points = numbersCount(6, dice)
+
 	case "full house":
-		value := countOccurences(dice)
-		if len(value) == 2 {
-			for i, v := range value {
+		if len(occurrences) == 2 {
+			for i, v := range occurrences {
 				if v == 3 || v == 2 {
 					points += i * v
 				}
 			}
-		} else {
-			points = 0
 		}
 
 	case "four of a kind":
-		value := countOccurences(dice)
-		if len(value) <= 2 {
-			for i, v := range value {
-				if v >= 4 {
-					points += 4 * i
-				}
+		for i, v := range occurrences {
+			if v >= 4 {
+				points = i * 4
 			}
-		} else {
-			points = 0
 		}
 
 	case "little straight":
-		value := 0
-		for _, v := range dice {
-			value += v
-		}
-		if value == 15 {
+		if len(occurrences) == 5 && occurrences[1] == 1 && occurrences[2] == 1 && occurrences[3] == 1 && occurrences[4] == 1 && occurrences[5] == 1 {
 			points = 30
-		} else {
-			points = 0
 		}
 
 	case "big straight":
-		value := 0
-		for _, v := range dice {
-			value += v
-		}
-		if value == 20 {
+		if len(occurrences) == 5 && occurrences[2] == 1 && occurrences[3] == 1 && occurrences[4] == 1 && occurrences[5] == 1 && occurrences[6] == 1 {
 			points = 30
-		} else {
-			points = 0
 		}
 
 	case "choice":
-		for _, v := range dice {
-			points += v
-		}
+		points = sum(dice)
+
 	case "yacht":
-		occurences := countOccurences(dice)
-		if len(occurences) == 1 {
+		if len(occurrences) == 1 {
 			points = 50
-		} else {
-			points = 0
 		}
 	}
 	return points
