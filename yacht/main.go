@@ -1,3 +1,23 @@
+package yacht
+
+func numbersCount(value int, dice []int) int {
+	var points int
+	for _, v := range dice {
+		if v == value {
+			points += value
+		}
+	}
+	return points
+}
+
+func countOccurences(dice []int) map[int]int {
+	occurences := make(map[int]int)
+	for _, v := range dice {
+		occurences[v] += 1
+	}
+	return occurences
+}
+
 func sum(dice []int) int {
 	total := 0
 	for _, v := range dice {
